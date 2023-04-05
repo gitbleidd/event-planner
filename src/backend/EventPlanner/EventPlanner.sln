@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPlanner.App", "EventPlanner.App\EventPlanner.App.csproj", "{087C10A8-050C-429E-A003-F5B0A4A5A003}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPlanner.Data", "EventPlanner.Data\EventPlanner.Data.csproj", "{7FDAED81-433E-4C37-BE66-E989E63BAECE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{087C10A8-050C-429E-A003-F5B0A4A5A003}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{087C10A8-050C-429E-A003-F5B0A4A5A003}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{087C10A8-050C-429E-A003-F5B0A4A5A003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FDAED81-433E-4C37-BE66-E989E63BAECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FDAED81-433E-4C37-BE66-E989E63BAECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FDAED81-433E-4C37-BE66-E989E63BAECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FDAED81-433E-4C37-BE66-E989E63BAECE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
