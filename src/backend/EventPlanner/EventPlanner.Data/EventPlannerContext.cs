@@ -23,12 +23,18 @@ public sealed class EventPlannerContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Constants.SchemaName);
-        
+
+        modelBuilder.Entity<User>().ToTable("user");
+        modelBuilder.Entity<Event>().ToTable("event");
+        modelBuilder.Entity<EventType>().ToTable("event_type");
+
         modelBuilder.Entity<User>()
             .HasMany(e => e.Events)
             .WithMany(e => e.Users)
-            .UsingEntity<EventUsers>();
-        
+            .UsingEntity<EventUser>("event_user",
+            l => l.HasOne<Event>(e => e.Event).WithMany(e => e.EventUsers),
+            r => r.HasOne<User>(e => e.User).WithMany(e => e.EventUsers));
+
         base.OnModelCreating(modelBuilder);
     }
 }

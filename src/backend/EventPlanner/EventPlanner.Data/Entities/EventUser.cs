@@ -1,6 +1,6 @@
 ﻿namespace EventPlanner.Data.Entities;
 
-public class EventUsers
+public class EventUser
 {
     public int EventId { get; set; }
     public int UserId { get; set; }
