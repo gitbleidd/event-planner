@@ -40,6 +40,8 @@ public class Startup
         {
             services.AddDbContext<EventPlannerContext>(options => options.UseNpgsql(connectionString));
         }
+
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
