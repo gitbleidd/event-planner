@@ -2,10 +2,10 @@
 
 namespace EventPlanner.Data.Entities;
 
-public class EventInfo
+public class Event
 {
     public int Id { get; set; }
-    public List<UserInfo> Users { get; } = new();
+    public List<User> Users { get; } = new();
     
     public EventType? Type { get; set; }
     public required string Name { get; set; }
