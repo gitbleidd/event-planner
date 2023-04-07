@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EventPlanner.Data.Entities;
 
@@ -9,15 +8,15 @@ public class EventInfo
     public List<UserInfo> Users { get; } = new();
     
     public EventType? Type { get; set; }
-    [Required] public string Name { get; set; } = null!;
-    [Required] public string OrganizerName { get; set; } = null!;
-    [Required] public string LocationName { get; set; } = null!;
+    public required string Name { get; set; }
+    public required string OrganizerName { get; set; }
+    public required string LocationName { get; set; }
     public decimal? Cost { get; set; } // null - means free event
     public string Description { get; set; } = string.Empty;
     
-    [Required] public DateTimeOffset BeginTime { get; set; }
-    [Required] public DateTimeOffset EndTime { get; set; }
-    [Required] public DateTimeOffset RegistrationEndTime { get; set; }
+    public required DateTimeOffset BeginTime { get; set; }
+    public required DateTimeOffset EndTime { get; set; }
+    public required DateTimeOffset RegistrationEndTime { get; set; }
     
     public int? Slots { get; set; } // null - unlimited count
     public int ExtraSlotsPerUser { get; set; } = 0;
