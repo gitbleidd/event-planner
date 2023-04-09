@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using EventPlanner.App.Services.Interfaces;
 using EventPlanner.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -42,6 +43,8 @@ public class Startup
         }
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        services.AddScoped<IParticipantSelectionService, Services.ParticipantSelectionService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

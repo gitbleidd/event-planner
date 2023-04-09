@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EventPlanner.App.Models;
+using EventPlanner.App.Services.Interfaces;
 using EventPlanner.Data;
 using EventPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +15,18 @@ public class EventsController : ControllerBase
 {
     private readonly ILogger<EventsController> _logger;
     private readonly EventPlannerContext _context;
+    private readonly IParticipantSelectionService _selectionService;
     private readonly IMapper _mapper;
 
     public EventsController(
         ILogger<EventsController> logger, 
         EventPlannerContext context,
+        IParticipantSelectionService selectionService,
         IMapper mapper)
     {
         _logger = logger;
         _context = context;
+        _selectionService = selectionService;
         _mapper = mapper;
     }
     
@@ -40,27 +44,29 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<EventInfo>> Get(int id)
     {
-        var foundEvent = await _context.Events
+        var eventInfo = await _context.Events
             .Include(e => e.Type)
             .FirstOrDefaultAsync(e => e.Id == id);
         
-        if (foundEvent is null)
-            return NotFound();
+        if (eventInfo is null)
+            return NotFound("Event not found");
 
-        return _mapper.Map<EventInfo>(foundEvent);
+        return _mapper.Map<EventInfo>(eventInfo);
     }
     
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<EventInfo>> Post(EventSaveInfo saveInfo)
+    public async Task<ActionResult<EventInfo>> Create(EventSaveInfo saveInfo)
     {
-        var eventType = await _context.EventTypes.FirstOrDefaultAsync(e => e.Id == saveInfo.TypeId);
-        if (eventType is null)
+        var eventInfo = await _context.EventTypes
+            .FirstOrDefaultAsync(e => e.Id == saveInfo.TypeId);
+        
+        if (eventInfo is null)
             return BadRequest("Event type not found");
 
         var newEvent = _mapper.Map<Event>(saveInfo);
-        newEvent.Type = eventType;
+        newEvent.Type = eventInfo;
 
         await _context.Events.AddAsync(newEvent);
         await _context.SaveChangesAsync();
@@ -71,18 +77,23 @@ public class EventsController : ControllerBase
     [HttpPut("id")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<EventInfo>> Change(int id, [FromBody] EventSaveInfo saveInfo)
+    public async Task<ActionResult<EventInfo>> Change(
+        int id, 
+        [FromBody]EventSaveInfo eventSaveInfo)
     {
-        var changedEvent = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
-        var eventType = await _context.EventTypes.FirstOrDefaultAsync(e => e.Id == saveInfo.TypeId);
+        var eventInfo = await _context.Events
+            .FirstOrDefaultAsync(e => e.Id == id);
+        var eventType = await _context.EventTypes
+            .FirstOrDefaultAsync(e => e.Id == eventSaveInfo.TypeId);
+        
+        if (eventInfo is null)  
+            return NotFound("Event not found");
         
         if (eventType is null)
             return BadRequest("Event type not found");
-        if (changedEvent is null)
-            return NotFound();
-
-        _mapper.Map(saveInfo, changedEvent);
-        changedEvent.Type = eventType;
+        
+        _mapper.Map(eventSaveInfo, eventInfo);
+        eventInfo.Type = eventType;
 
         await _context.SaveChangesAsync();
 
@@ -94,14 +105,143 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
-        var foundEvent = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
+        var eventInfo = await _context.Events
+            .FirstOrDefaultAsync(e => e.Id == id);
         
-        if (foundEvent is null)
-            return NotFound();
+        if (eventInfo is null)
+            return NotFound("Event not found");
 
-        _context.Events.Remove(foundEvent);
+        _context.Events.Remove(eventInfo);
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+
+    [HttpPost("register")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Register(EventRegistrationInfo registrationInfo)
+    {
+        var eventInfo = await _context.Events
+            .FirstOrDefaultAsync(e => e.Id == registrationInfo.EventId);
+        var userInfo = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == registrationInfo.UserEmail);
+
+        if (eventInfo is null)
+            return NotFound("Event not found");
+
+        if (userInfo is null)
+            return NotFound("User not found");
+
+        if (registrationInfo.ExtraSlotsPerUser > eventInfo.ExtraSlotsPerUser)
+            return BadRequest("Value of extra slots for the user is exceeded");
+
+        if (eventInfo.RegisteredUsers.Any(u => u == userInfo))
+            return BadRequest("User already registered");
+
+        var eventRegisteredUsers = new EventRegisteredUser
+        {
+            ExtraSlotsPerUser = registrationInfo.ExtraSlotsPerUser,
+            User = userInfo,
+            Event = eventInfo,
+        };
+
+        eventInfo.EventRegisteredUsers.Add(eventRegisteredUsers);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+    
+    [HttpGet("id/registered-users")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<List<RegisteredUserInfo>>> GetRegisteredUsers(int id)
+    {
+        var eventInfo = await _context.Events
+            .Include(e => e.RegisteredUsers)
+            .Include(e => e.EventRegisteredUsers)
+            .FirstOrDefaultAsync(e => e.Id == id);
+        
+        if (eventInfo is null)
+            return NotFound("Event not found");
+        
+        var registeredUsers = eventInfo.RegisteredUsers
+            .Select(u => new RegisteredUserInfo(
+                u.Id,
+                u.FirstName,
+                u.LastName,
+                u.MiddleName,
+                u.Email,
+                GetExtraSlotsForUser(u, eventInfo)
+                ))
+            .ToList();
+
+        return registeredUsers;
+    }
+    
+
+    [HttpGet("id/participant")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<List<RegisteredUserInfo>>> GetParticipant(int id)
+    {
+        var eventInfo = await _context.Events
+            .Include(e => e.Participants)
+            .Include(e => e.EventRegisteredUsers)
+            .FirstOrDefaultAsync(e => e.Id == id);
+        
+        if (eventInfo is null)
+            return NotFound("Event not found");
+        
+        var participants = eventInfo.Participants
+            .Select(u => new RegisteredUserInfo(
+                u.Id,
+                u.FirstName,
+                u.LastName,
+                u.MiddleName,
+                u.Email,
+                GetExtraSlotsForUser(u, eventInfo)
+            ))
+            .ToList();
+
+        return participants;
+    }
+
+
+    [HttpPost("id/make-participants")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> MakeParticipants(int id)
+    {
+        var eventInfo = await _context.Events
+            .Include(e => e.RegisteredUsers)
+            .ThenInclude(e => e.ParticipantEvents)
+            .Include(e => e.Participants)
+            .Include(e => e.EventRegisteredUsers)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (eventInfo is null)
+            return NotFound("Event not found");
+
+        if (eventInfo.Participants.Any())
+            return NoContent();
+        
+        var participants = _selectionService
+            .GetParticipants(eventInfo, eventInfo.Slots);
+        
+        eventInfo.Participants.AddRange(participants);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+
+    private int GetExtraSlotsForUser(
+        User userInfo, 
+        Event eventInfo)
+    {
+        return eventInfo.EventRegisteredUsers
+            .Single(x => x.User == userInfo).ExtraSlotsPerUser;
     }
 }

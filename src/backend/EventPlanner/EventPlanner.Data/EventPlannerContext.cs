@@ -9,7 +9,9 @@ public sealed class EventPlannerContext : DbContext
     public DbSet<Admin> Admins => Set<Admin>();
     public DbSet<Event> Events => Set<Event>();
     public DbSet<EventType> EventTypes => Set<EventType>();
-    
+    public DbSet<EventRegisteredUser> EventRegisteredUsers => Set<EventRegisteredUser>();
+    public DbSet<EventParticipant> EventParticipants => Set<EventParticipant>();
+
     public EventPlannerContext(DbContextOptions<EventPlannerContext> options) : base(options)
     {
         Database.EnsureCreated();
@@ -29,11 +31,18 @@ public sealed class EventPlannerContext : DbContext
         modelBuilder.Entity<EventType>().ToTable("event_type");
 
         modelBuilder.Entity<User>()
-            .HasMany(e => e.Events)
-            .WithMany(e => e.Users)
-            .UsingEntity<EventUser>("event_user",
-            l => l.HasOne<Event>(e => e.Event).WithMany(e => e.EventUsers),
-            r => r.HasOne<User>(e => e.User).WithMany(e => e.EventUsers));
+            .HasMany(e => e.RegistredEvents)
+            .WithMany(e => e.RegisteredUsers)
+            .UsingEntity<EventRegisteredUser>("event_registered_user",
+            l => l.HasOne<Event>(e => e.Event).WithMany(e => e.EventRegisteredUsers),
+            r => r.HasOne<User>(e => e.User).WithMany(e => e.EventRegisteredUsers));
+        
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.ParticipantEvents)
+            .WithMany(e => e.Participants)
+            .UsingEntity<EventParticipant>("event_participant",
+                l => l.HasOne<Event>(e => e.Event).WithMany(e => e.EventParticipants),
+                r => r.HasOne<User>(e => e.User).WithMany(e => e.EventParticipants));
 
         base.OnModelCreating(modelBuilder);
     }
