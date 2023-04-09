@@ -35,7 +35,9 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<EventInfo>>> GetAll()
     {
-        var events = await _context.Events.Include(e => e.Type).ToListAsync();
+        var events = await _context.Events
+            .Include(e => e.Type)
+            .ToListAsync();
 
         return _mapper.Map<List<EventInfo>>(events);
     }
@@ -78,6 +80,7 @@ public class EventsController : ControllerBase
     [HttpPut("id")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<EventInfo>> Change(
         int id, 
         [FromBody]EventSaveInfo eventSaveInfo)
@@ -122,9 +125,11 @@ public class EventsController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Register(EventRegistrationInfo registrationInfo)
     {
         var eventInfo = await _context.Events
+            .Include(e => e.RegisteredUsers)
             .FirstOrDefaultAsync(e => e.Id == registrationInfo.EventId);
         var userInfo = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == registrationInfo.UserEmail);
