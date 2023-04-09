@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EventPlanner.App.Extensions;
 using EventPlanner.App.Models;
 using EventPlanner.App.Services.Interfaces;
 using EventPlanner.Data;
@@ -165,17 +166,9 @@ public class EventsController : ControllerBase
         
         if (eventInfo is null)
             return NotFound("Event not found");
-        
+
         var registeredUsers = eventInfo.RegisteredUsers
-            .Select(u => new RegisteredUserInfo(
-                u.Id,
-                u.FirstName,
-                u.LastName,
-                u.MiddleName,
-                u.Email,
-                GetExtraSlotsForUser(u, eventInfo)
-                ))
-            .ToList();
+            .ToRegisteredUserInfo(eventInfo);
 
         return registeredUsers;
     }
@@ -195,15 +188,7 @@ public class EventsController : ControllerBase
             return NotFound("Event not found");
         
         var participants = eventInfo.Participants
-            .Select(u => new RegisteredUserInfo(
-                u.Id,
-                u.FirstName,
-                u.LastName,
-                u.MiddleName,
-                u.Email,
-                GetExtraSlotsForUser(u, eventInfo)
-            ))
-            .ToList();
+            .ToRegisteredUserInfo(eventInfo);
 
         return participants;
     }
@@ -234,14 +219,5 @@ public class EventsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
-    }
-
-
-    private int GetExtraSlotsForUser(
-        User userInfo, 
-        Event eventInfo)
-    {
-        return eventInfo.EventRegisteredUsers
-            .Single(x => x.User == userInfo).ExtraSlotsPerUser;
     }
 }
