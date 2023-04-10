@@ -7,7 +7,6 @@ public class Event
     public int Id { get; set; }
     public List<User> Users { get; } = new();
     public List<EventUser> EventUsers { get; } = new();
-
     public EventType? Type { get; set; }
     public required string Name { get; set; }
     public required string OrganizerName { get; set; }

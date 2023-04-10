@@ -1,5 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
+using EventPlanner.App.Services.Interfaces;
 using EventPlanner.App.Authentication;
 using EventPlanner.App.Settings;
 using EventPlanner.Data;
@@ -121,10 +122,16 @@ public class Startup
         {
             services.AddDbContext<EventPlannerContext>(options => options.UseNpgsql(connectionString));
         }
+
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        services.AddScoped<IParticipantSelectionService, Services.ParticipantSelectionService>();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EventPlannerContext eventPlannerContext)
     {
+        eventPlannerContext.Database.Migrate();
+        
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();

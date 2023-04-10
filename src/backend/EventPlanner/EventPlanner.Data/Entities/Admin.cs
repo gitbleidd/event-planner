@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using EventPlanner.Data.Entities;
-
-namespace EventPlanner.Data;
+﻿namespace EventPlanner.Data.Entities;
 
 public class Admin
 {
