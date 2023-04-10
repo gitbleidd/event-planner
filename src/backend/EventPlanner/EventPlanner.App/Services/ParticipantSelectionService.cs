@@ -12,12 +12,12 @@ public class ParticipantSelectionService : IParticipantSelectionService
         var seatsTaken = 0;
         slots ??= int.MaxValue;
         var participants = new List<User>();
-        var registeredUsers = eventInfo.RegisteredUsers.ToList();
+        var registeredUsers = eventInfo.Users.ToList();
 
         while (registeredUsers.Any())
         {
             var randomUser = GetRandomUser(registeredUsers);
-            var userCountSeatsTaken = eventInfo.EventRegisteredUsers
+            var userCountSeatsTaken = eventInfo.EventUsers
                 .Single(x => x.User == randomUser).TakenExtraUsersCount + 1;
             
             if (seatsTaken + userCountSeatsTaken <= slots)
@@ -33,11 +33,14 @@ public class ParticipantSelectionService : IParticipantSelectionService
 
     private User GetRandomUser(List<User> users)
     {
-        var random = new Random();
-        var initialTotalWeight = users.Sum(u => u.ParticipantEvents.Count);
-        var updatedTotalWeight = users.Sum(u => initialTotalWeight - u.ParticipantEvents.Count);
-        var randomNumber = random.Next(0, updatedTotalWeight + 1);
-        return GetUserByNumber(users, randomNumber, initialTotalWeight);
+        // TODO
+        // var random = new Random();
+        // var initialTotalWeight = users.Sum(u => u.ParticipantEvents.Count);
+        // var updatedTotalWeight = users.Sum(u => initialTotalWeight - u.ParticipantEvents.Count);
+        // var randomNumber = random.Next(0, updatedTotalWeight + 1);
+        // return GetUserByNumber(users, randomNumber, initialTotalWeight);
+
+        return users.First();
     }
     
     private User GetUserByNumber(
@@ -48,7 +51,8 @@ public class ParticipantSelectionService : IParticipantSelectionService
         var currentSum = 0;
         foreach (var user in sortedUsers)
         {
-            currentSum += initialTotalWeight - user.ParticipantEvents.Count;
+            // TODO
+            // currentSum += initialTotalWeight - user.ParticipantEvents.Count;
 
             if (currentSum >= randomNumber)
                 return user;

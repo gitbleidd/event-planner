@@ -130,7 +130,7 @@ public class EventsController : ControllerBase
     public async Task<ActionResult> Register(EventRegistrationInfo registrationInfo)
     {
         var eventInfo = await _context.Events
-            .Include(e => e.RegisteredUsers)
+            .Include(e => e.Users)
             .FirstOrDefaultAsync(e => e.Id == registrationInfo.EventId);
         var userInfo = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == registrationInfo.UserEmail);
@@ -144,10 +144,10 @@ public class EventsController : ControllerBase
         if (registrationInfo.TakenExtraUsersCount > eventInfo.ExtraSlotsPerUser)
             return BadRequest("Value of extra slots for the user is exceeded");
 
-        if (eventInfo.RegisteredUsers.Any(u => u == userInfo))
+        if (eventInfo.Users.Any(u => u == userInfo))
             return BadRequest("User already registered");
 
-        var eventRegisteredUsers = new EventRegisteredUser
+        var eventRegisteredUsers = new EventUser
         {
             TakenExtraUsersCount = registrationInfo.TakenExtraUsersCount,
             User = userInfo,
@@ -155,7 +155,7 @@ public class EventsController : ControllerBase
             Comment = registrationInfo.Comment
         };
 
-        eventInfo.EventRegisteredUsers.Add(eventRegisteredUsers);
+        eventInfo.EventUsers.Add(eventRegisteredUsers);
         await _context.SaveChangesAsync();
 
         return NoContent();
@@ -166,23 +166,22 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<RegisteredUserInfo>>> GetRegisteredUsers(int id)
     {
-        var eventInfo = await _context.Events
-            .Include(e => e.EventRegisteredUsers)
-            .ThenInclude(e => e.User)
-            .FirstOrDefaultAsync(e => e.Id == id);
-        
+        var eventInfo = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
         if (eventInfo is null)
             return NotFound("Event not found");
 
-        return eventInfo.EventRegisteredUsers.Select(e => new RegisteredUserInfo(
-            e.User.Id,
-            e.User.FirstName,
-            e.User.LastName,
-            e.User.MiddleName,
-            e.User.Email,
-            e.TakenExtraUsersCount,
-            e.Comment
-        )).ToList();
+
+        return await _context.EventUsers.Where(e => e.EventId == id)
+            .Include(e => User)
+            .Select(e => new RegisteredUserInfo(
+                e.User.Id,
+                e.User.FirstName,
+                e.User.LastName,
+                e.User.MiddleName,
+                e.User.Email,
+                e.TakenExtraUsersCount,
+                e.Comment
+            )).ToListAsync();
     }
     
 
@@ -197,12 +196,9 @@ public class EventsController : ControllerBase
             return NotFound("Event not found");
 
         
-        return await _context.EventParticipants
-            .Join(_context.EventRegisteredUsers,
-                x => new { userId = x.User.Id, eventId = x.Event.Id },
-                y => new { userId = y.User.Id, eventId = y.Event.Id },
-                (x, y) => y)
-            .Where(e => e.Event.Id == id)
+        return await _context.EventUsers
+            .Where(e => e.Event.Id == id && e.IsParticipating)
+            .Include(e => e.User)
             .Select(e => new RegisteredUserInfo(
                 e.User.Id,
                 e.User.FirstName,
@@ -220,25 +216,28 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> MakeParticipants(int id)
     {
-        var eventInfo = await _context.Events
-            .Include(e => e.RegisteredUsers)
-            .ThenInclude(e => e.ParticipantEvents)
-            .Include(e => e.Participants)
-            .Include(e => e.EventRegisteredUsers)
-            .FirstOrDefaultAsync(e => e.Id == id);
-
-        if (eventInfo is null)
-            return NotFound("Event not found");
-
-        if (eventInfo.Participants.Any())
-            return NoContent();
+        throw new NotImplementedException();
         
-        var participants = _selectionService
-            .GetParticipants(eventInfo, eventInfo.Slots);
-        
-        eventInfo.Participants.AddRange(participants);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        // TODO
+        // var eventInfo = await _context.Events
+        //     .Include(e => e.Users)
+        //     .ThenInclude(e => e.ParticipantEvents)
+        //     .Include(e => e.Participants)
+        //     .Include(e => e.EventUsers)
+        //     .FirstOrDefaultAsync(e => e.Id == id);
+        //
+        // if (eventInfo is null)
+        //     return NotFound("Event not found");
+        //
+        // if (eventInfo.Participants.Any())
+        //     return NoContent();
+        //
+        // var participants = _selectionService
+        //     .GetParticipants(eventInfo, eventInfo.Slots);
+        //
+        // eventInfo.Participants.AddRange(participants);
+        // await _context.SaveChangesAsync();
+        //
+        // return NoContent();
     }
 }

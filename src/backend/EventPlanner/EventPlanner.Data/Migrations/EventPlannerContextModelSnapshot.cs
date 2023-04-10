@@ -272,14 +272,14 @@ namespace EventPlanner.Data.Migrations
             modelBuilder.Entity("event_registered_user", b =>
                 {
                     b.HasOne("EventPlanner.Data.Entities.Event", "Event")
-                        .WithMany("EventRegisteredUsers")
+                        .WithMany("EventUsers")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_event_registered_user_event_event_id");
 
                     b.HasOne("EventPlanner.Data.Entities.User", "User")
-                        .WithMany("EventRegisteredUsers")
+                        .WithMany("EventUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -294,14 +294,14 @@ namespace EventPlanner.Data.Migrations
                 {
                     b.Navigation("EventParticipants");
 
-                    b.Navigation("EventRegisteredUsers");
+                    b.Navigation("EventUsers");
                 });
 
             modelBuilder.Entity("EventPlanner.Data.Entities.User", b =>
                 {
                     b.Navigation("EventParticipants");
 
-                    b.Navigation("EventRegisteredUsers");
+                    b.Navigation("EventUsers");
                 });
 #pragma warning restore 612, 618
         }

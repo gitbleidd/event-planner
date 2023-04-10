@@ -5,12 +5,8 @@ namespace EventPlanner.Data.Entities;
 public class Event
 {
     public int Id { get; set; }
-    
-    public List<User> RegisteredUsers { get; } = new();
-    public List<User> Participants { get; } = new();
-    public List<EventRegisteredUser> EventRegisteredUsers { get; } = new();
-    public List<EventParticipant> EventParticipants { get; } = new();
-
+    public List<User> Users { get; } = new();
+    public List<EventUser> EventUsers { get; } = new();
     public EventType? Type { get; set; }
     public required string Name { get; set; }
     public required string OrganizerName { get; set; }
