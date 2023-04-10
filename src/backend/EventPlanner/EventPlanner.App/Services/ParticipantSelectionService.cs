@@ -15,7 +15,7 @@ public class ParticipantSelectionService : IParticipantSelectionService
         var participants = new List<ParticipantSelectionModel>();
         ChangeWeight(registeredUsers);
 
-        while (registeredUsers.Any() || seatsTaken < slots)
+        while (registeredUsers.Any() && seatsTaken < slots)
         {
             var randomUser = GetRandomUser(registeredUsers);
             var countSeatsTakenByUser = randomUser.TakenExtraUsersCount + 1;
