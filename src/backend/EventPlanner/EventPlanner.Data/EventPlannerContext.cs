@@ -7,6 +7,7 @@ public sealed class EventPlannerContext : DbContext
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<Admin> Admins => Set<Admin>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Event> Events => Set<Event>();
     public DbSet<EventType> EventTypes => Set<EventType>();
     public DbSet<EventUser> EventUsers => Set<EventUser>();
@@ -30,7 +31,7 @@ public sealed class EventPlannerContext : DbContext
             .UsingEntity<EventUser>(
                 l => l.HasOne<Event>(e => e.Event).WithMany(e => e.EventUsers),
                 r => r.HasOne<User>(e => e.User).WithMany(e => e.EventUsers));
-
+        
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -91,7 +91,7 @@ public class UsersController : ControllerBase
             FirstName = registerInfo.FirstName,
             LastName = registerInfo.LastName,
             MiddleName = registerInfo.MiddleName,
-            Email = registerInfo.Email
+            Email = registerInfo.Email.ToLower()
         };
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
