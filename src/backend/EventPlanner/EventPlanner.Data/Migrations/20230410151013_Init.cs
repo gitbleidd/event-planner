@@ -16,7 +16,7 @@ namespace EventPlanner.Data.Migrations
                 name: "content");
 
             migrationBuilder.CreateTable(
-                name: "event_type",
+                name: "event_types",
                 schema: "content",
                 columns: table => new
                 {
@@ -26,11 +26,11 @@ namespace EventPlanner.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_event_type", x => x.id);
+                    table.PrimaryKey("pk_event_types", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "user",
+                name: "users",
                 schema: "content",
                 columns: table => new
                 {
@@ -43,11 +43,11 @@ namespace EventPlanner.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user", x => x.id);
+                    table.PrimaryKey("pk_users", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "event",
+                name: "events",
                 schema: "content",
                 columns: table => new
                 {
@@ -68,12 +68,12 @@ namespace EventPlanner.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_event", x => x.id);
+                    table.PrimaryKey("pk_events", x => x.id);
                     table.ForeignKey(
-                        name: "fk_event_event_types_type_id",
+                        name: "fk_events_event_types_type_id",
                         column: x => x.type_id,
                         principalSchema: "content",
-                        principalTable: "event_type",
+                        principalTable: "event_types",
                         principalColumn: "id");
                 });
 
@@ -94,62 +94,37 @@ namespace EventPlanner.Data.Migrations
                         name: "fk_admins_users_user_id",
                         column: x => x.user_id,
                         principalSchema: "content",
-                        principalTable: "user",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "event_participant",
-                schema: "content",
-                columns: table => new
-                {
-                    event_id = table.Column<int>(type: "integer", nullable: false),
-                    user_id = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_event_participant", x => new { x.event_id, x.user_id });
-                    table.ForeignKey(
-                        name: "fk_event_participant_event_event_id",
-                        column: x => x.event_id,
-                        principalSchema: "content",
-                        principalTable: "event",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_event_participant_user_user_id",
-                        column: x => x.user_id,
-                        principalSchema: "content",
-                        principalTable: "user",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "event_registered_user",
+                name: "event_users",
                 schema: "content",
                 columns: table => new
                 {
                     event_id = table.Column<int>(type: "integer", nullable: false),
                     user_id = table.Column<int>(type: "integer", nullable: false),
-                    extra_slots_per_user = table.Column<int>(type: "integer", nullable: false)
+                    is_participating = table.Column<bool>(type: "boolean", nullable: false),
+                    taken_extra_users_count = table.Column<int>(type: "integer", nullable: false),
+                    comment = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_event_registered_user", x => new { x.event_id, x.user_id });
+                    table.PrimaryKey("pk_event_users", x => new { x.event_id, x.user_id });
                     table.ForeignKey(
-                        name: "fk_event_registered_user_event_event_id",
+                        name: "fk_event_users_events_event_id",
                         column: x => x.event_id,
                         principalSchema: "content",
-                        principalTable: "event",
+                        principalTable: "events",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_event_registered_user_user_user_id",
+                        name: "fk_event_users_users_user_id",
                         column: x => x.user_id,
                         principalSchema: "content",
-                        principalTable: "user",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -161,27 +136,21 @@ namespace EventPlanner.Data.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_event_type_id",
+                name: "ix_event_users_user_id",
                 schema: "content",
-                table: "event",
+                table: "event_users",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_events_type_id",
+                schema: "content",
+                table: "events",
                 column: "type_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_event_participant_user_id",
+                name: "ix_users_email",
                 schema: "content",
-                table: "event_participant",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_event_registered_user_user_id",
-                schema: "content",
-                table: "event_registered_user",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_email",
-                schema: "content",
-                table: "user",
+                table: "users",
                 column: "email",
                 unique: true);
         }
@@ -194,23 +163,19 @@ namespace EventPlanner.Data.Migrations
                 schema: "content");
 
             migrationBuilder.DropTable(
-                name: "event_participant",
+                name: "event_users",
                 schema: "content");
 
             migrationBuilder.DropTable(
-                name: "event_registered_user",
+                name: "events",
                 schema: "content");
 
             migrationBuilder.DropTable(
-                name: "event",
+                name: "users",
                 schema: "content");
 
             migrationBuilder.DropTable(
-                name: "user",
-                schema: "content");
-
-            migrationBuilder.DropTable(
-                name: "event_type",
+                name: "event_types",
                 schema: "content");
         }
     }

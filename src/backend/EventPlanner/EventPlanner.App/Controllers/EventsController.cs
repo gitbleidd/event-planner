@@ -173,8 +173,9 @@ public class EventsController : ControllerBase
             return NotFound("Event not found");
 
 
-        return await _context.EventUsers.Where(e => e.EventId == id)
-            .Include(e => User)
+        return await _context.EventUsers
+            .Include(e => e.User)
+            .Where(e => e.EventId == id)
             .Select(e => new RegisteredUserInfo(
                 e.User.Id,
                 e.User.FirstName,

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EventPlanner.Data.Migrations
 {
     [DbContext(typeof(EventPlannerContext))]
-    [Migration("20230410114146_Init")]
+    [Migration("20230410151013_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -116,12 +116,12 @@ namespace EventPlanner.Data.Migrations
                         .HasColumnName("type_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_event");
+                        .HasName("pk_events");
 
                     b.HasIndex("TypeId")
-                        .HasDatabaseName("ix_event_type_id");
+                        .HasDatabaseName("ix_events_type_id");
 
-                    b.ToTable("event", "content");
+                    b.ToTable("events", "content");
                 });
 
             modelBuilder.Entity("EventPlanner.Data.Entities.EventType", b =>
@@ -139,9 +139,41 @@ namespace EventPlanner.Data.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_event_type");
+                        .HasName("pk_event_types");
 
-                    b.ToTable("event_type", "content");
+                    b.ToTable("event_types", "content");
+                });
+
+            modelBuilder.Entity("EventPlanner.Data.Entities.EventUser", b =>
+                {
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer")
+                        .HasColumnName("event_id");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("comment");
+
+                    b.Property<bool>("IsParticipating")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_participating");
+
+                    b.Property<int>("TakenExtraUsersCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("taken_extra_users_count");
+
+                    b.HasKey("EventId", "UserId")
+                        .HasName("pk_event_users");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_event_users_user_id");
+
+                    b.ToTable("event_users", "content");
                 });
 
             modelBuilder.Entity("EventPlanner.Data.Entities.User", b =>
@@ -173,55 +205,13 @@ namespace EventPlanner.Data.Migrations
                         .HasColumnName("middle_name");
 
                     b.HasKey("Id")
-                        .HasName("pk_user");
+                        .HasName("pk_users");
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_email");
+                        .HasDatabaseName("ix_users_email");
 
-                    b.ToTable("user", "content");
-                });
-
-            modelBuilder.Entity("event_participant", b =>
-                {
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer")
-                        .HasColumnName("event_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("EventId", "UserId")
-                        .HasName("pk_event_participant");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_event_participant_user_id");
-
-                    b.ToTable("event_participant", "content");
-                });
-
-            modelBuilder.Entity("event_registered_user", b =>
-                {
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer")
-                        .HasColumnName("event_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.Property<int>("ExtraSlotsPerUser")
-                        .HasColumnType("integer")
-                        .HasColumnName("extra_slots_per_user");
-
-                    b.HasKey("EventId", "UserId")
-                        .HasName("pk_event_registered_user");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_event_registered_user_user_id");
-
-                    b.ToTable("event_registered_user", "content");
+                    b.ToTable("users", "content");
                 });
 
             modelBuilder.Entity("EventPlanner.Data.Entities.Admin", b =>
@@ -241,47 +231,26 @@ namespace EventPlanner.Data.Migrations
                     b.HasOne("EventPlanner.Data.Entities.EventType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
-                        .HasConstraintName("fk_event_event_types_type_id");
+                        .HasConstraintName("fk_events_event_types_type_id");
 
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("event_participant", b =>
+            modelBuilder.Entity("EventPlanner.Data.Entities.EventUser", b =>
                 {
                     b.HasOne("EventPlanner.Data.Entities.Event", "Event")
-                        .WithMany("EventParticipants")
+                        .WithMany("EventUsers")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_event_participant_event_event_id");
+                        .HasConstraintName("fk_event_users_events_event_id");
 
                     b.HasOne("EventPlanner.Data.Entities.User", "User")
-                        .WithMany("EventParticipants")
+                        .WithMany("EventUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_event_participant_user_user_id");
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("event_registered_user", b =>
-                {
-                    b.HasOne("EventPlanner.Data.Entities.Event", "Event")
-                        .WithMany("EventRegisteredUsers")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_event_registered_user_event_event_id");
-
-                    b.HasOne("EventPlanner.Data.Entities.User", "User")
-                        .WithMany("EventRegisteredUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_event_registered_user_user_user_id");
+                        .HasConstraintName("fk_event_users_users_user_id");
 
                     b.Navigation("Event");
 
@@ -290,16 +259,12 @@ namespace EventPlanner.Data.Migrations
 
             modelBuilder.Entity("EventPlanner.Data.Entities.Event", b =>
                 {
-                    b.Navigation("EventParticipants");
-
-                    b.Navigation("EventRegisteredUsers");
+                    b.Navigation("EventUsers");
                 });
 
             modelBuilder.Entity("EventPlanner.Data.Entities.User", b =>
                 {
-                    b.Navigation("EventParticipants");
-
-                    b.Navigation("EventRegisteredUsers");
+                    b.Navigation("EventUsers");
                 });
 #pragma warning restore 612, 618
         }
