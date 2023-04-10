@@ -1,58 +1,62 @@
-﻿using EventPlanner.App.Services.Interfaces;
+﻿using EventPlanner.App.Models;
+using EventPlanner.App.Services.Interfaces;
 using EventPlanner.Data.Entities;
 
 namespace EventPlanner.App.Services;
 
 public class ParticipantSelectionService : IParticipantSelectionService
 {
-    public List<User> GetParticipants(
-        Event eventInfo, 
+    public HashSet<User> GetParticipants(
+        List<ParticipantSelectionModel> registeredUsers, 
         int? slots)
     {
         var seatsTaken = 0;
         slots ??= int.MaxValue;
-        var participants = new List<User>();
-        var registeredUsers = eventInfo.Users.ToList();
+        var participants = new List<ParticipantSelectionModel>();
+        ChangeWeight(registeredUsers);
 
-        while (registeredUsers.Any())
+        while (registeredUsers.Any() || seatsTaken < slots)
         {
             var randomUser = GetRandomUser(registeredUsers);
-            var userCountSeatsTaken = eventInfo.EventUsers
-                .Single(x => x.User == randomUser).TakenExtraUsersCount + 1;
-            
-            if (seatsTaken + userCountSeatsTaken <= slots)
+            var countSeatsTakenByUser = randomUser.TakenExtraUsersCount + 1;
+
+            if (seatsTaken + countSeatsTakenByUser <= slots)
             {
                 participants.Add(randomUser);
-                seatsTaken += userCountSeatsTaken;
+                seatsTaken += countSeatsTakenByUser;
             }
             registeredUsers.Remove(randomUser);
         }
         
-        return participants;
+        return participants
+            .Select(p => p.UserInfo)
+            .ToHashSet();
     }
 
-    private User GetRandomUser(List<User> users)
-    {
-        // TODO
-        // var random = new Random();
-        // var initialTotalWeight = users.Sum(u => u.ParticipantEvents.Count);
-        // var updatedTotalWeight = users.Sum(u => initialTotalWeight - u.ParticipantEvents.Count);
-        // var randomNumber = random.Next(0, updatedTotalWeight + 1);
-        // return GetUserByNumber(users, randomNumber, initialTotalWeight);
 
-        return users.First();
+    private void ChangeWeight(List<ParticipantSelectionModel> users)
+    {
+        var totalWeight = users.Sum(u => u.Weight);
+        users.ForEach(u => u.Weight = totalWeight - u.Weight);
+    }
+
+    private ParticipantSelectionModel GetRandomUser(
+        List<ParticipantSelectionModel> users)
+    {
+        var random = new Random();
+        var totalWeight = users.Sum(u => u.Weight);
+        var randomNumber = random.Next(0, totalWeight + 1);
+        return GetUserByNumber(users, randomNumber);
     }
     
-    private User GetUserByNumber(
-        List<User> sortedUsers, 
-        int randomNumber, 
-        int initialTotalWeight)
+    private ParticipantSelectionModel GetUserByNumber(
+        List<ParticipantSelectionModel> users, 
+        int randomNumber)
     {
         var currentSum = 0;
-        foreach (var user in sortedUsers)
+        foreach (var user in users)
         {
-            // TODO
-            // currentSum += initialTotalWeight - user.ParticipantEvents.Count;
+            currentSum += user.Weight;
 
             if (currentSum >= randomNumber)
                 return user;

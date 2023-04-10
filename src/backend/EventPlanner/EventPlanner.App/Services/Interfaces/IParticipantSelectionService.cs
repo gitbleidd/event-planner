@@ -5,7 +5,7 @@ namespace EventPlanner.App.Services.Interfaces;
 
 public interface IParticipantSelectionService
 {
-    public List<User> GetParticipants(
-        Event eventInfo, 
+    public HashSet<User> GetParticipants(
+        List<ParticipantSelectionModel> registeredUsers, 
         int? slots);
 }

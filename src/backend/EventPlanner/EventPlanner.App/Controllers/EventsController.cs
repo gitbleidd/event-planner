@@ -220,28 +220,35 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> MakeParticipants(int id)
     {
-        throw new NotImplementedException();
+        var eventInfo = await _context.Events
+            .FirstOrDefaultAsync(e => e.Id == id);
         
-        // TODO
-        // var eventInfo = await _context.Events
-        //     .Include(e => e.Users)
-        //     .ThenInclude(e => e.ParticipantEvents)
-        //     .Include(e => e.Participants)
-        //     .Include(e => e.EventUsers)
-        //     .FirstOrDefaultAsync(e => e.Id == id);
-        //
-        // if (eventInfo is null)
-        //     return NotFound("Event not found");
-        //
-        // if (eventInfo.Participants.Any())
-        //     return NoContent();
-        //
-        // var participants = _selectionService
-        //     .GetParticipants(eventInfo, eventInfo.Slots);
-        //
-        // eventInfo.Participants.AddRange(participants);
-        // await _context.SaveChangesAsync();
-        //
-        // return NoContent();
+        if (eventInfo is null)
+            return NotFound("Event not found");
+
+        var eventUsers = await _context.EventUsers
+            .Where(e => e.EventId == id)
+            .Include(e => e.User)
+            .ThenInclude(u => u.EventUsers)
+            .ToListAsync();
+
+        if (eventUsers.Any(e => e.IsParticipating))
+            return NoContent();
+
+        var registeredUsers = eventUsers
+            .Select(eu => new ParticipantSelectionModel(
+                eu.User,
+                eu.TakenExtraUsersCount,
+                eu.User.EventUsers.Count(u => u.IsParticipating)))
+            .ToList();
+        
+        var participants = _selectionService
+            .GetParticipants(registeredUsers, eventInfo.Slots);
+
+        eventUsers.Where(eu => participants.Contains(eu.User)).ToList()
+            .ForEach(eu => eu.IsParticipating = true);
+        
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 }
