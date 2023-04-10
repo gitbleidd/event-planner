@@ -108,6 +108,7 @@ public class EventsController : ControllerBase
     [HttpDelete("id")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Delete(int id)
     {
         var eventInfo = await _context.Events
@@ -127,6 +128,7 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Register(EventRegistrationInfo registrationInfo)
     {
         var eventInfo = await _context.Events
@@ -214,6 +216,7 @@ public class EventsController : ControllerBase
     [HttpPost("id/make-participants")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> MakeParticipants(int id)
     {
         throw new NotImplementedException();
