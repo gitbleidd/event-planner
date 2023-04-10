@@ -47,8 +47,10 @@ public class Startup
         services.AddScoped<IParticipantSelectionService, Services.ParticipantSelectionService>();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EventPlannerContext eventPlannerContext)
     {
+        eventPlannerContext.Database.Migrate();
+        
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();

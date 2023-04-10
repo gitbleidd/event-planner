@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EventPlanner.App.Extensions;
 using EventPlanner.App.Models;
 using EventPlanner.App.Services.Interfaces;
 using EventPlanner.Data;
@@ -37,6 +36,7 @@ public class EventsController : ControllerBase
     {
         var events = await _context.Events
             .Include(e => e.Type)
+            .OrderBy(e => e.BeginTime)
             .ToListAsync();
 
         return _mapper.Map<List<EventInfo>>(events);
@@ -81,6 +81,7 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult<EventInfo>> Change(
         int id, 
         [FromBody]EventSaveInfo eventSaveInfo)
@@ -140,7 +141,7 @@ public class EventsController : ControllerBase
         if (userInfo is null)
             return NotFound("User not found");
 
-        if (registrationInfo.ExtraSlotsPerUser > eventInfo.ExtraSlotsPerUser)
+        if (registrationInfo.TakenExtraUsersCount > eventInfo.ExtraSlotsPerUser)
             return BadRequest("Value of extra slots for the user is exceeded");
 
         if (eventInfo.RegisteredUsers.Any(u => u == userInfo))
@@ -148,9 +149,10 @@ public class EventsController : ControllerBase
 
         var eventRegisteredUsers = new EventRegisteredUser
         {
-            ExtraSlotsPerUser = registrationInfo.ExtraSlotsPerUser,
+            TakenExtraUsersCount = registrationInfo.TakenExtraUsersCount,
             User = userInfo,
             Event = eventInfo,
+            Comment = registrationInfo.Comment
         };
 
         eventInfo.EventRegisteredUsers.Add(eventRegisteredUsers);
@@ -165,17 +167,22 @@ public class EventsController : ControllerBase
     public async Task<ActionResult<List<RegisteredUserInfo>>> GetRegisteredUsers(int id)
     {
         var eventInfo = await _context.Events
-            .Include(e => e.RegisteredUsers)
             .Include(e => e.EventRegisteredUsers)
+            .ThenInclude(e => e.User)
             .FirstOrDefaultAsync(e => e.Id == id);
         
         if (eventInfo is null)
             return NotFound("Event not found");
 
-        var registeredUsers = eventInfo.RegisteredUsers
-            .ToRegisteredUserInfo(eventInfo);
-
-        return registeredUsers;
+        return eventInfo.EventRegisteredUsers.Select(e => new RegisteredUserInfo(
+            e.User.Id,
+            e.User.FirstName,
+            e.User.LastName,
+            e.User.MiddleName,
+            e.User.Email,
+            e.TakenExtraUsersCount,
+            e.Comment
+        )).ToList();
     }
     
 
@@ -184,18 +191,27 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<RegisteredUserInfo>>> GetParticipant(int id)
     {
-        var eventInfo = await _context.Events
-            .Include(e => e.Participants)
-            .Include(e => e.EventRegisteredUsers)
-            .FirstOrDefaultAsync(e => e.Id == id);
+        var eventInfo = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
         
         if (eventInfo is null)
             return NotFound("Event not found");
-        
-        var participants = eventInfo.Participants
-            .ToRegisteredUserInfo(eventInfo);
 
-        return participants;
+        
+        return await _context.EventParticipants
+            .Join(_context.EventRegisteredUsers,
+                x => new { userId = x.User.Id, eventId = x.Event.Id },
+                y => new { userId = y.User.Id, eventId = y.Event.Id },
+                (x, y) => y)
+            .Where(e => e.Event.Id == id)
+            .Select(e => new RegisteredUserInfo(
+                e.User.Id,
+                e.User.FirstName,
+                e.User.LastName,
+                e.User.MiddleName,
+                e.User.Email,
+                e.TakenExtraUsersCount,
+                e.Comment
+            )).ToListAsync();
     }
 
 

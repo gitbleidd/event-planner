@@ -6,4 +6,5 @@ public record RegisteredUserInfo(
     string LastName,
     string? MiddleName,
     string Email,
-    int ExtraSlots);
+    int TakenExtraUsersCount,
+    string Comment);

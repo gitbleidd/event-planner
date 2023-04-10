@@ -18,7 +18,7 @@ public class ParticipantSelectionService : IParticipantSelectionService
         {
             var randomUser = GetRandomUser(registeredUsers);
             var userCountSeatsTaken = eventInfo.EventRegisteredUsers
-                .Single(x => x.User == randomUser).ExtraSlotsPerUser + 1;
+                .Single(x => x.User == randomUser).TakenExtraUsersCount + 1;
             
             if (seatsTaken + userCountSeatsTaken <= slots)
             {

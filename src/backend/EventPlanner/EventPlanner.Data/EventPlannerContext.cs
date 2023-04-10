@@ -14,7 +14,6 @@ public sealed class EventPlannerContext : DbContext
 
     public EventPlannerContext(DbContextOptions<EventPlannerContext> options) : base(options)
     {
-        Database.EnsureCreated();
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

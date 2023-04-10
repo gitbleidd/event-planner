@@ -12,7 +12,9 @@ public record EventRegistrationInfo
     public required int EventId { get; init; }
     
     [Required] 
-    [Range(1, int.MaxValue)]
-    public required int ExtraSlotsPerUser { get; init; }
+    [Range(1, 100)]
+    public required int TakenExtraUsersCount { get; init; }
+
+    public string Comment { get; init; } = string.Empty;
 }
     
