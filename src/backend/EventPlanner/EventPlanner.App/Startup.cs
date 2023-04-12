@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using EventPlanner.App.Services.Interfaces;
 using EventPlanner.App.Authentication;
+using EventPlanner.App.Filters;
 using EventPlanner.App.Settings;
 using EventPlanner.Data;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +67,10 @@ public class Startup
                 };
             });
         
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<DatabaseExceptionFilter>();
+        });
         services.AddSingleton(new JwtManager(securitySettings));
         services.AddHttpContextAccessor();
         services.AddScoped<ClaimsValidationService>();
