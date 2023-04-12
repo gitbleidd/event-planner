@@ -197,7 +197,7 @@ public class EventsController : ControllerBase
         if (eventInfo is null)
             return NotFound("Event not found");
 
-        if (!eventInfo.IsParticipantsFormed && eventInfo.RegistrationEndTime > DateTimeOffset.Now)
+        if (!eventInfo.IsParticipantsFormed && DateTimeOffset.Now >= eventInfo.RegistrationEndTime)
             await MakeParticipants(eventInfo);
         
         return await _context.EventUsers
@@ -216,9 +216,6 @@ public class EventsController : ControllerBase
     
     private async Task MakeParticipants(Event eventInfo)
     {
-        if (eventInfo.IsParticipantsFormed)
-            return;
-
         var eventUsers = await _context.EventUsers
             .Where(e => e.EventId == eventInfo.Id)
             .Include(e => e.User)
