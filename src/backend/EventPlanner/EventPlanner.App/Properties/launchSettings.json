@@ -8,7 +8,9 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7120;http://localhost:5094",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ADMIN_EMAIL": "admin@ibs.ru",
+        "ADMIN_PASSWORD": "admin"
       }
     }
   }

@@ -5,6 +5,7 @@ using EventPlanner.App.Authentication;
 using EventPlanner.App.Filters;
 using EventPlanner.App.Settings;
 using EventPlanner.Data;
+using EventPlanner.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -135,6 +136,7 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EventPlannerContext eventPlannerContext)
     {
         eventPlannerContext.Database.Migrate();
+        AddAdmin(eventPlannerContext);
         
         if (env.IsDevelopment())
         {
@@ -152,5 +154,39 @@ public class Startup
         app.UseAuthorization();
         
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+    }
+
+    private void AddAdmin(EventPlannerContext context)
+    {
+        var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
+        var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+
+        if (adminEmail is null || adminPassword is null)
+            return;
+        
+        var adminInfo = context.Admins
+            .Include(a => a.User)
+            .FirstOrDefault(a => a.User.Email == adminEmail);
+        if (adminInfo is not null)
+            return;
+        
+        using var dbContextTransaction = context.Database.BeginTransaction();
+        var adminUser = new User
+        {
+            Email = adminEmail,
+            FirstName = "",
+            LastName = ""
+        };
+        context.Users.Add(adminUser);
+        
+        var admin = new Admin
+        {
+            Password = BCrypt.Net.BCrypt.HashPassword(adminPassword),
+            User = adminUser
+        };
+        context.Admins.Add(admin);
+            
+        context.SaveChanges();
+        dbContextTransaction.Commit();
     }
 }
