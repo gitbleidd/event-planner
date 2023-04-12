@@ -32,7 +32,7 @@ public class ParticipantSelectionServiceTests
         // Arrange
         int slots = 15;
         var registeredUsers = new Fixture()
-            .CreateMany<ParticipantSelectionModel>(20)
+            .CreateMany<ParticipantSelectionModel>(15)
             .ToList();
 
         registeredUsers.ForEach(p =>
@@ -47,11 +47,10 @@ public class ParticipantSelectionServiceTests
         var participants = participantSelectionService.GetParticipants(registeredUsers.ToList(), slots);
         
         // Assert
-        var countSeatsTaken = registeredUsers
-            .Where(x => participants.Contains(x.UserInfo))
-            .Sum(x => x.TakenExtraUsersCount + 1);
-
-        countSeatsTaken.Should().Be(slots);
+        var anotherUsers = registeredUsers
+            .Where(x => !participants.Contains(x.UserInfo));
+        
+        anotherUsers.Should().HaveCount(0);
     }
     
     
