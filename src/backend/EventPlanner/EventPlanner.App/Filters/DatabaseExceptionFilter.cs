@@ -23,7 +23,7 @@ public class DatabaseExceptionFilter : Attribute, IExceptionFilter
                 context.Result = new ContentResult
                 {
                     StatusCode = StatusCodes.Status422UnprocessableEntity,
-                    Content = pgException.Detail,
+                    Content = $"{exc.Message}\n{pgException.Detail}" ,
                 };
             }
             else
