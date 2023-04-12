@@ -20,6 +20,8 @@ public class Event
     
     public int? Slots { get; set; } // null - unlimited count
     public int ExtraSlotsPerUser { get; set; } = 0;
+
+    public bool IsParticipantsFormed { get; set; } = false;
     
     [Column(TypeName = "jsonb")] public string Resources { get; set; } = string.Empty;
 }
