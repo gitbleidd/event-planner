@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPlanner.App", "EventPl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPlanner.Data", "EventPlanner.Data\EventPlanner.Data.csproj", "{7FDAED81-433E-4C37-BE66-E989E63BAECE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPlanner.UnitTests", "EventPlanner.UnitTests\EventPlanner.UnitTests.csproj", "{92338741-B08A-4000-BDE8-CEFE53C6E6EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{7FDAED81-433E-4C37-BE66-E989E63BAECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FDAED81-433E-4C37-BE66-E989E63BAECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FDAED81-433E-4C37-BE66-E989E63BAECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92338741-B08A-4000-BDE8-CEFE53C6E6EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92338741-B08A-4000-BDE8-CEFE53C6E6EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92338741-B08A-4000-BDE8-CEFE53C6E6EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92338741-B08A-4000-BDE8-CEFE53C6E6EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
