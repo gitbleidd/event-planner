@@ -171,8 +171,7 @@ public class EventsController : ControllerBase
         var eventInfo = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
         if (eventInfo is null)
             return NotFound("Event not found");
-
-
+        
         return await _context.EventUsers
             .Include(e => e.User)
             .Where(e => e.EventId == id)
@@ -198,8 +197,17 @@ public class EventsController : ControllerBase
         if (eventInfo is null)
             return NotFound("Event not found");
 
+        if (DateTimeOffset.Now < eventInfo.RegistrationEndTime)
+            return Ok(new
+            {
+                Error = "Registration for the event is not completed",
+                Participants = new List<RegisteredUserInfo>()
+            });
+
+        if (!eventInfo.IsParticipantsFormed)
+            await MakeParticipants(eventInfo);
         
-        return await _context.EventUsers
+        var participants = await _context.EventUsers
             .Where(e => e.Event.Id == id && e.IsParticipating)
             .Include(e => e.User)
             .Select(e => new RegisteredUserInfo(
@@ -211,30 +219,21 @@ public class EventsController : ControllerBase
                 e.TakenExtraUsersCount,
                 e.Comment
             )).ToListAsync();
+
+        return Ok(new
+        {
+            Participants = participants
+        });
     }
-
-
-    [HttpPost("id/make-participants")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<ActionResult> MakeParticipants(int id)
+    
+    private async Task MakeParticipants(Event eventInfo)
     {
-        var eventInfo = await _context.Events
-            .FirstOrDefaultAsync(e => e.Id == id);
-        
-        if (eventInfo is null)
-            return NotFound("Event not found");
-
         var eventUsers = await _context.EventUsers
-            .Where(e => e.EventId == id)
+            .Where(e => e.EventId == eventInfo.Id)
             .Include(e => e.User)
             .ThenInclude(u => u.EventUsers)
             .ToListAsync();
-
-        if (eventUsers.Any(e => e.IsParticipating))
-            return NoContent();
-
+        
         var registeredUsers = eventUsers
             .Select(eu => new ParticipantSelectionModel(
                 eu.User,
@@ -245,10 +244,14 @@ public class EventsController : ControllerBase
         var participants = _selectionService
             .GetParticipants(registeredUsers, eventInfo.Slots);
 
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        
         eventUsers.Where(eu => participants.Contains(eu.User)).ToList()
-            .ForEach(eu => eu.IsParticipating = true);
+                .ForEach(eu => eu.IsParticipating = true);
+
+        eventInfo.IsParticipantsFormed = true;
         
         await _context.SaveChangesAsync();
-        return NoContent();
+        await transaction.CommitAsync();
     }
 }

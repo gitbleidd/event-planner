@@ -14,6 +14,7 @@ public sealed class EventPlannerContext : DbContext
 
     public EventPlannerContext(DbContextOptions<EventPlannerContext> options) : base(options)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
