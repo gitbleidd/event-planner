@@ -197,10 +197,17 @@ public class EventsController : ControllerBase
         if (eventInfo is null)
             return NotFound("Event not found");
 
-        if (!eventInfo.IsParticipantsFormed && DateTimeOffset.Now >= eventInfo.RegistrationEndTime)
+        if (DateTimeOffset.Now < eventInfo.RegistrationEndTime)
+            return Ok(new
+            {
+                Error = "Registration for the event is not completed",
+                Participants = new List<RegisteredUserInfo>()
+            });
+
+        if (!eventInfo.IsParticipantsFormed)
             await MakeParticipants(eventInfo);
         
-        return await _context.EventUsers
+        var participants = await _context.EventUsers
             .Where(e => e.Event.Id == id && e.IsParticipating)
             .Include(e => e.User)
             .Select(e => new RegisteredUserInfo(
@@ -212,6 +219,11 @@ public class EventsController : ControllerBase
                 e.TakenExtraUsersCount,
                 e.Comment
             )).ToListAsync();
+
+        return Ok(new
+        {
+            Participants = participants
+        });
     }
     
     private async Task MakeParticipants(Event eventInfo)
