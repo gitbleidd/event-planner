@@ -31,12 +31,25 @@ public class EventsController : ControllerBase
         _mapper = mapper;
     }
     
-    [HttpGet("all")]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<EventInfo>>> GetAll()
+    public async Task<ActionResult<List<EventInfo>>> Get(
+        [FromQuery] DateTime? filterBeginDate,
+        [FromQuery] DateTime? filterEndDate)
     {
+        if (filterBeginDate is null || filterEndDate is null)
+        {
+            var currentUtcDate = DateTime.UtcNow.Date;
+            filterBeginDate = currentUtcDate.AddDays(-currentUtcDate.Day + 1);
+            filterEndDate = filterBeginDate.Value.AddMonths(1);
+        }
+
+        var filterBeginUtcDate = new DateTimeOffset(filterBeginDate.Value, TimeSpan.Zero);
+        var filterEndUtcDate = new DateTimeOffset(filterEndDate.Value, TimeSpan.Zero);
+        
         var events = await _context.Events
             .Include(e => e.Type)
+            .Where(e => e.BeginTime >= filterBeginUtcDate && e.BeginTime < filterEndUtcDate)
             .OrderBy(e => e.BeginTime)
             .ToListAsync();
 
