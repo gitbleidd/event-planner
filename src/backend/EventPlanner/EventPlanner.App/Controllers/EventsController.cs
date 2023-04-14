@@ -34,18 +34,18 @@ public class EventsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<EventInfo>>> Get(
-        [FromQuery] DateTime? filterBeginDate,
-        [FromQuery] DateTime? filterEndDate)
+        [FromQuery] DateTime? beginDate,
+        [FromQuery] DateTime? endDate)
     {
-        if (filterBeginDate is null || filterEndDate is null)
+        if (beginDate is null || endDate is null)
         {
             var currentUtcDate = DateTime.UtcNow.Date;
-            filterBeginDate = currentUtcDate.AddDays(-currentUtcDate.Day + 1);
-            filterEndDate = filterBeginDate.Value.AddMonths(1);
+            beginDate = new DateTime(currentUtcDate.Year, currentUtcDate.Month, 1);
+            endDate = beginDate.Value.AddMonths(1);
         }
 
-        var filterBeginUtcDate = new DateTimeOffset(filterBeginDate.Value, TimeSpan.Zero);
-        var filterEndUtcDate = new DateTimeOffset(filterEndDate.Value, TimeSpan.Zero);
+        var filterBeginUtcDate = new DateTimeOffset(beginDate.Value, TimeSpan.Zero);
+        var filterEndUtcDate = new DateTimeOffset(endDate.Value, TimeSpan.Zero);
         
         var events = await _context.Events
             .Include(e => e.Type)
