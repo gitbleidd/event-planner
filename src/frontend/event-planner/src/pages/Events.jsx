@@ -110,7 +110,7 @@ function Events() {
               <dl className="dl-close">
               <dd>Тип: {event.type.name}</dd>
               <dd>Место проведения: {event.locationName}</dd>
-              <dd>Дата начала: {new Date(event.beginTime).toLocaleTimeString().substring(0, 5)}</dd>
+              <dd>Время начала: {new Date(event.beginTime).toLocaleTimeString().substring(0, 5)}</dd>
               <dd>
                 Цена: {event.cost == null ? "Бесплатно" : `${event.cost} ₽`}
                 <button>Зарегистрироваться</button>
