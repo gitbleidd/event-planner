@@ -1,0 +1,35 @@
+@media screen and (min-width: 800px) {
+  .list-group-item-events  {
+    margin-left: 26%;
+    margin-right: 26%;
+  }
+}
+
+.navlink-events {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navlink-events:hover {
+  color: #8365FF;
+}
+
+.dl-close {
+  font-size: 1.18rem;
+}
+
+.dl-close dd {
+  margin-bottom: 0px;
+}
+
+.dl-close dd button {
+  padding: 6px;
+  background-color: rgba(206, 205, 222, 0.2);
+  border: 0;
+  border-radius: 0.375rem;
+  float: right;
+}
+
+.dl-close dd button:hover {
+  background-color: rgba(206, 205, 222, 0.35);
+}

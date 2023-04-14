@@ -15,7 +15,7 @@ function App() {
         <Route path={routes.homeRoute} element={<Home/>}/>
         <Route path={routes.newEventRoute} element={<EventEditCreation/>}/>
         <Route path={routes.eventsRoute} element={<Events/>}/>
-        <Route path={routes.eventRoute} element={<Event/>}/>
+        <Route path={routes.eventIdRoute} element={<Event/>}/>
         <Route path={routes.editEventRoute} element={<EventEditCreation/>}/>
       </Routes>
     </BrowserRouter>
