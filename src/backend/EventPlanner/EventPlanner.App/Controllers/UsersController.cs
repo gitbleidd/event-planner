@@ -58,23 +58,6 @@ public class UsersController : ControllerBase
         };
     }
 
-    [HttpGet("all")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<UserInfo>>> GetAll()
-    {
-        var users = await _context.Users.Select(u => new UserInfo
-        {
-            Id = u.Id,
-            Email = u.Email,
-            FirstName = u.FirstName,
-            LastName = u.LastName,
-            MiddleName = u.MiddleName,
-
-        }).ToListAsync();
-
-        return users;
-    }
-    
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -84,6 +67,11 @@ public class UsersController : ControllerBase
         if (!mailAddress.Host.Equals("ibs.ru", StringComparison.OrdinalIgnoreCase))
         {
             return BadRequest("The Email host is not 'ibs.ru'.");
+        }
+
+        if (_context.Users.FirstOrDefault(u => u.Email == registerInfo.Email) is not null)
+        {
+            return BadRequest("The user with this email already exists");
         }
         
         var user = new User()
