@@ -40,6 +40,10 @@ function EventRegistrationModal(props) {
             <Form.Control type="text" placeholder="Отчество" />
           </Form.Group>
         </Form>
+        <Form.Group>
+          <Form.Label>Количество дополнительных гостей</Form.Label>
+          <Form.Control type="number" min={0} placeholder="Количество дополнительных гостей*" />
+        </Form.Group>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary-rounded" onClick={props.onHide}>
