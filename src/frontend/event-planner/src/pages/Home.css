@@ -1,0 +1,9 @@
+﻿.fc-toolbar-title::first-letter {
+    text-transform: capitalize;
+}
+.fc-col-header-cell-cushion::first-letter {
+    text-transform: capitalize;
+}
+.fc-button-group {
+    margin-top: 7px;
+}
