@@ -5,8 +5,11 @@ import Navbar from 'react-bootstrap/Navbar';
 import {NavLink} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import * as routes from "../shared/routes"
+import {useState} from "react";
+import AuthorizationModal from "./AuthorizationModal";
 
 function NavBar() {
+    const [authorizationModal, setAuthorizationModalShow] = useState(false);
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
@@ -20,7 +23,13 @@ function NavBar() {
                         <Nav.Link as={NavLink} to={routes.homeRoute}>Домашняя страница</Nav.Link>
                         <Nav.Link as={NavLink} to={routes.newEventRoute}>Создать мероприятие</Nav.Link>
                     </Nav>
-                    <Button variant="outline-secondary">Войти</Button>
+                    <Button variant="outline-secondary" onClick={() => setAuthorizationModalShow(true)}>
+                        Войти
+                    </Button>
+                    <AuthorizationModal 
+                        show={authorizationModal}
+                        onHide={() => setAuthorizationModalShow(false)} />
+                    
                 </Navbar.Collapse>
             </Container>
         </Navbar>
