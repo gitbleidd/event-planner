@@ -17,7 +17,7 @@ function EventRegistrationModal(props) {
             <Form.Label>Почта</Form.Label>
             <Form.Control
               type="email"
-              placeholder="name@example.com"
+              placeholder="email@ibs.com"
             />
           </Form.Group>
 
