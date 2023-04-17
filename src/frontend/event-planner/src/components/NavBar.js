@@ -9,7 +9,7 @@ import {useState} from "react";
 import AuthorizationModal from "./AuthorizationModal";
 
 function NavBar() {
-    const [authorizationModal, setAuthorizationModalShow] = useState(false);
+    const [authorizationModalShow, setAuthorizationModalShow] = useState(false);
     return (
         <Navbar bg="light" expand="lg">
             <Container fluid>
@@ -27,7 +27,7 @@ function NavBar() {
                         Войти
                     </Button>
                     <AuthorizationModal 
-                        show={authorizationModal}
+                        show={authorizationModalShow}
                         onHide={() => setAuthorizationModalShow(false)} />
                     
                 </Navbar.Collapse>
