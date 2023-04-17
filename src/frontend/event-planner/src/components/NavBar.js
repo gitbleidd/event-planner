@@ -1,13 +1,14 @@
-import {useState} from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import * as routes from "../shared/routes"
-import "./NavBar.css";
 import AuthorizationModal from "./AuthorizationModal";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./NavBar.css";
+import "./SecondaryRoundedButton.css";
+import * as routes from "../shared/routes"
 
 function NavBar() {
     const [authorizationModalShow, setAuthorizationModalShow] = useState(false);
@@ -24,7 +25,7 @@ function NavBar() {
                         <Nav.Link as={NavLink} to={routes.homeRoute}>Домашняя страница</Nav.Link>
                         <Nav.Link as={NavLink} to={routes.newEventRoute}>Создать мероприятие</Nav.Link>
                     </Nav>
-                    <Button variant="rounded" onClick={() => setAuthorizationModalShow(true)}>
+                    <Button variant="secondary-rounded" onClick={() => setAuthorizationModalShow(true)}>
                         Войти
                     </Button>
                     <AuthorizationModal 

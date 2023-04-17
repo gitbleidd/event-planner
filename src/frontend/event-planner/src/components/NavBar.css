@@ -20,14 +20,3 @@
   color: #8365FF;
   border-radius: 0.375rem;
 }
-
-.btn-rounded {
-  background-color: rgba(206, 205, 222, 0.2);
-  color: #8365FF;
-  border-radius: 0.375rem;
-}
-
-.btn-rounded:hover {
-  background-color: rgba(206, 205, 222, 0.35);
-  color: #8365FF;
-}

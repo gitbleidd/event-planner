@@ -2,6 +2,8 @@
 import {Form, Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import "./SecondaryRoundedButton.css";
+import "./PrimaryRoundedButton.css";
 
 function AuthorizationModal(props) {
     return (
@@ -30,10 +32,10 @@ function AuthorizationModal(props) {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={props.onHide}>
+                <Button variant="secondary-rounded" onClick={props.onHide}>
                     Отмена
                 </Button>
-                <Button variant="primary" onClick={props.onHide}>
+                <Button variant="primary-rounded" onClick={props.onHide}>
                     Войти
                 </Button>
             </Modal.Footer>
