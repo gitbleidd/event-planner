@@ -5,7 +5,6 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Carousel from 'react-bootstrap/Carousel';
 import "./Event.css"
-import ButtonToolbar from 'react-bootstrap/Button';
 
 function Event() {
   const [event, setEvent] = useState({
