@@ -31,14 +31,14 @@ function EventEditCreation() {
           Создание мероприятия
         </h1>
         <Form class="form-center" action={routes.homeRoute} noValidate validated={validated} onSubmit={handleSubmit}>
-          <Form.Group>
-            <Form.Label>Наименование</Form.Label>
-            <Form.Control required type="text" placeholder="Наименование*" />
+          <Form.Group className="mb-2">
+            <Form.Label>Название</Form.Label>
+            <Form.Control required type="text" placeholder="Название*" />
             <Form.Control.Feedback type="invalid">
-              Заполните наименование мероприятия.
+              Введите название мероприятия.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group >
+          <Form.Group className="mb-2" >
             <Form.Label>Тип мероприятия</Form.Label>
             <Form.Select required>
               {eventTypes.map(event => (
@@ -46,70 +46,70 @@ function EventEditCreation() {
               ))}
             </Form.Select>
             <Form.Control.Feedback type="invalid">
-              Заполните тип мероприятия.
+              Введите тип мероприятия.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="mb-2">
             <Form.Label>Организатор</Form.Label>
             <Form.Control required type="text" placeholder="Организатор*" />
             <Form.Control.Feedback type="invalid">
-              Заполните организатора мероприятия.
+              Введите организатора мероприятия.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="mb-2">
             <Form.Label>Стоимость</Form.Label>
             <Form.Control type="number" min={1} placeholder="Стоимость" />
             <Form.Control.Feedback type="invalid">
               Стоимость должна быть больше нуля.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="mb-2">
             <Form.Label>Количество мест</Form.Label>
             <Form.Control type="number" min={1} placeholder="Количество мест" />
             <Form.Control.Feedback type="invalid">
               Количество мест должно быть больше нуля.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="mb-2">
             <Form.Label>Количество гостей, которых можно пригласить</Form.Label>
             <Form.Control required type="number" min={1} placeholder="Количество гостей, которых можно пригласить" />
             <Form.Control.Feedback type="invalid">
-              Заполните количество дополнительных гостей значением больше нуля.
+              Введите количество дополнительных гостей значением больше нуля.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
-            <Form.Label>Дата начала</Form.Label>
-            <Form.Control required type="date" placeholder="Дата начала" />
+          <Form.Group className="mb-2">
+            <Form.Label>Дата и время начала мероприятия</Form.Label>
+            <Form.Control required type="datetime-local" placeholder="Дата начала" />
             <Form.Control.Feedback type="invalid">
-              Заполните дату начала мероприятия.
+              Введите дату начала мероприятия.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
-            <Form.Label>Дата окончания</Form.Label>
-            <Form.Control required type="date" placeholder="Дата окончания" />
+          <Form.Group className="mb-2">
+            <Form.Label>Дата и время окончания мероприятия</Form.Label>
+            <Form.Control required type="datetime-local" placeholder="Дата окончания" />
             <Form.Control.Feedback type="invalid">
-              Заполните дату окончания мероприятия.
+              Введите дату окончания мероприятия.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
-            <Form.Label>Дата окончания регистрации</Form.Label>
-            <Form.Control required type="date" placeholder="Дата окончания регистрации" />
+          <Form.Group className="mb-2">
+            <Form.Label>Дата и время окончания регистрации</Form.Label>
+            <Form.Control required type="datetime-local" placeholder="Дата окончания регистрации" />
             <Form.Control.Feedback type="invalid">
-              Заполните дату окончания регистрации на мероприятие.
+              Введите дату окончания регистрации на мероприятие.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="mb-2">
             <Form.Label>Описание</Form.Label>
-            <Form.Control required as="textarea" rows={3} placeholder="Описание" />
+            <Form.Control required as="textarea" rows={3} placeholder="Описание*" />
             <Form.Control.Feedback type="invalid">
-              Заполните описание мероприятия.
+              Введите описание мероприятия.
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="d-flex justify-content-between">
-            <Button className="mr-auto p-2 my-4">
+            <Button variant="primary-rounded" className="mr-auto p-2 my-4">
               <CardImage className="card-image"/> Добавить изображения
             </Button>
-            <Button type="submit" className="p-2 align-self-end my-4 col-3">Создать</Button>
+            <Button variant="primary-rounded" type="submit" className="p-2 align-self-end my-4 col-3">Создать</Button>
           </Form.Group>
         </Form>
       </FormContainer>
