@@ -9,7 +9,7 @@ function EventRegistrationModal(props) {
   return (
     <Modal {...props} aria-labelledby="contained-modal-title-vcenter">
       <Modal.Header closeButton>
-        <Modal.Title>Регастрация на мероприятие</Modal.Title>
+        <Modal.Title>Регистрация на мероприятие</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
