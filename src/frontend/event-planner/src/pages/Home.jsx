@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from "@fullcalendar/interaction"
 import allLocales from "@fullcalendar/core/locales-all"
 import "./Home.css"
+import * as routes from "../shared/routes"
 
 function Home() {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ function Home() {
       firstDay={1}
       dayMaxEvents={2}
       events={events}
-      dateClick={(dateClick) => navigate("/events", { state: dateClick.date })}
-      eventClick={(eventClick) => navigate(`/events/${eventClick.event.id}`)}
+      dateClick={(dateClick) => navigate(routes.eventsRoute, { state: dateClick.date })}
+      eventClick={(eventClick) => navigate(`${routes.eventRoute}/${eventClick.event.id}`)}
     />
   );
 }
