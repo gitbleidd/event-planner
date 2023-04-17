@@ -60,21 +60,21 @@ function EventEditCreation() {
             <Form.Label>Стоимость</Form.Label>
             <Form.Control type="number" min={1} placeholder="Стоимость" />
             <Form.Control.Feedback type="invalid">
-              Стоимость должна быть больше ноля.
+              Стоимость должна быть больше нуля.
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
             <Form.Label>Количество мест</Form.Label>
             <Form.Control type="number" min={1} placeholder="Количество мест" />
             <Form.Control.Feedback type="invalid">
-              Количество мест должно быть больше ноля.
+              Количество мест должно быть больше нуля.
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
             <Form.Label>Количество гостей, которых можно пригласить</Form.Label>
             <Form.Control required type="number" min={1} placeholder="Количество гостей, которых можно пригласить" />
             <Form.Control.Feedback type="invalid">
-              Заполните количество дополнительных гостей значением больше ноля.
+              Заполните количество дополнительных гостей значением больше нуля.
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
