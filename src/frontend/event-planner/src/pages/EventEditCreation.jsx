@@ -107,7 +107,7 @@ function EventEditCreation() {
           </Form.Group>
           <Form.Group className="d-flex justify-content-between">
             <Button className="mr-auto p-2 my-4">
-              <CardImage className="card-image"/> Добавить изображение
+              <CardImage className="card-image"/> Добавить изображения
             </Button>
             <Button type="submit" className="p-2 align-self-end my-4 col-3">Создать</Button>
           </Form.Group>
