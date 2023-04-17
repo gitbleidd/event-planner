@@ -3,8 +3,11 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { NavLink } from "react-router-dom";
 import "./Events.css";
 import * as routes from "../shared/routes";
+import EventRegistrationModal from "../components/EventRegistrationModal";
+import AuthorizationModal from "../components/AuthorizationModal";
 
 function Events() {
+  const [eventRegistrationModalShow, setEventRegistrationModalShow] = useState(false);
   const [events, setEvents] = useState([
     {
       id: 0,
@@ -114,13 +117,16 @@ function Events() {
               <dd>Время начала: {new Date(event.beginTime).toLocaleTimeString().substring(0, 5)}</dd>
               <dd>
                 Цена: {event.cost == null ? "Бесплатно" : `${event.cost} ₽`}
-                <button>Зарегистрироваться</button>
+                <button onClick={() => setEventRegistrationModalShow(true)}>Зарегистрироваться</button>
               </dd>
               </dl>
             </ListGroup.Item>
           ))
         }
       </ListGroup>
+      <EventRegistrationModal
+        show={eventRegistrationModalShow}
+        onHide={() => setEventRegistrationModalShow(false)} />
     </div>
 
   );
