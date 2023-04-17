@@ -1,0 +1,11 @@
+.carousel {
+  border-radius: 1rem;
+  overflow: hidden;
+  width: 90%;
+}
+
+.carousel img {
+  height: 480px;
+  vertical-align: middle;
+  object-fit: cover;
+}
