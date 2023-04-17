@@ -1,10 +1,11 @@
+import React, { useState } from "react";
 import ListGroup from 'react-bootstrap/ListGroup';
 import { NavLink } from "react-router-dom";
 import "./Events.css";
 import * as routes from "../shared/routes";
 
 function Events() {
-  const testEvents = [
+  const [events, setEvents] = useState([
     {
       id: 0,
       type: {
@@ -95,7 +96,7 @@ function Events() {
       extraSlotsPerUser: 0,
       resources: "{}",
     }
-  ];
+  ]);
 
   return (
     <div>
@@ -104,7 +105,7 @@ function Events() {
       </h1>
       <ListGroup variant="flush">
         {
-          testEvents.map((event, index) => (
+          events.map((event, index) => (
             <ListGroup.Item className="list-group-item-events">
               <h3>{<NavLink className="navlink-events" to={`${routes.eventRoute}/${event.id}`}>{event.name}</NavLink>}</h3>
               <dl className="dl-close">
