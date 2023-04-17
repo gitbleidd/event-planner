@@ -4,13 +4,19 @@ import "./EventEditCreation.css";
 import FormContainer from "../components/FormContainer";
 import Button from "react-bootstrap/Button";
 import { CardImage } from "react-bootstrap-icons"
+import {useNavigate} from "react-router-dom";
+import * as routes from "../shared/routes";
 function EventEditCreation() {
-  
+  const navigate = useNavigate();
   const [eventTypes, setEventTypes] = useState([
     {id: 1, name: "Концерт"},
     {id: 2, name: "Мастер-класс"},
     {id: 3, name: "Выставка"},
   ]);
+  
+  const handleSubmit = () => {
+    navigate(routes.homeRoute);
+  }
   
   return (
 
@@ -67,9 +73,8 @@ function EventEditCreation() {
             <Button className="mr-auto p-2 my-4">
               <CardImage className="card-image"/> Добавить изображение
             </Button>
-            <Button className="p-2 align-self-end my-4 col-3">Создать</Button>
+            <Button type="submit" onClick={handleSubmit} className="p-2 align-self-end my-4 col-3">Создать</Button>
           </Form.Group>
-          
         </Form>
       </FormContainer>
   );
