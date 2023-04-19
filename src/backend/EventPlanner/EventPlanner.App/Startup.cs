@@ -113,9 +113,9 @@ public class Startup
                 { securityScheme, new string[] { } }
             });
 
-            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-            c.IncludeXmlComments(xmlPath);
+            // var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+            // c.IncludeXmlComments(xmlPath);
         });
 
         var connectionString = Configuration.GetConnectionString("DefaultConnection");

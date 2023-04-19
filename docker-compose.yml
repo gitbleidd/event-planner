@@ -8,8 +8,8 @@ services:
       - 5094:5094
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:7120;http://+:5094
-      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=admin;Host=localhost;Port=5432;Database=event_planner;
+      - ASPNETCORE_URLS=http://+:5094
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=event_planner;
       - ADMIN_EMAIL=admin@ibs.ru
       - ADMIN_PASSWORD=admin
     depends_on:
